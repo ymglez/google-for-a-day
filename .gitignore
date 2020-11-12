@@ -522,3 +522,4 @@ MigrationBackup/
 .ionide/
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudio,aspnetcore,angular,visualstudiocode
+/src/backend/GoogleForADay.Services.Api/Properties/launchSettings.json
