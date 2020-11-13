@@ -17,7 +17,7 @@ namespace GoogleForADay.Tests
         public BaseTest()
         {
             ServiceProvider = new ServiceCollection()
-                .AddSingleton<IKeyValueRepository<Keyword>, LightningKeywordRepository>()
+                .AddSingleton<IKeyValueRepository<Keyword>, LightningRepository<Keyword>>()
                 .BuildServiceProvider();
         }
 

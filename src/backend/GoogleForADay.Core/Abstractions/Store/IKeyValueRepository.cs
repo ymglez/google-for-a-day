@@ -11,9 +11,9 @@ namespace GoogleForADay.Core.Abstractions.Store
     {
         bool Init();
 
-        T Get(object key);
+        T Get(string key);
 
-        bool Upsert(T entity);
+        bool Upsert(string key, T entity);
 
         bool Delete(object key);
 

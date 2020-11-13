@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace GoogleForADay.Infrastructure.Store.LightningDB
 {
-    public class LightningKeywordRepository : IKeyValueRepository<Keyword>
+    public class LightningRepository<T> : IKeyValueRepository<T> where T : Entity 
     {
 
         private LightningEnvironment _env;
@@ -19,7 +19,7 @@ namespace GoogleForADay.Infrastructure.Store.LightningDB
 
         private bool _alreadyInit;
 
-        public LightningKeywordRepository()
+        public LightningRepository()
         {
             if (_alreadyInit) return;
 
@@ -40,25 +40,22 @@ namespace GoogleForADay.Infrastructure.Store.LightningDB
 
         }
 
-        public Keyword Get(object key)
+        public T Get(string key)
         {
-            if (!(key is string strKey))
-                throw new ArgumentException("Invalid key type");
-
-            var res = _txn.Get(_db, Encoding.UTF8.GetBytes(strKey));
+            var res = _txn.Get(_db, Encoding.UTF8.GetBytes(key));
 
             var strObj = Encoding.UTF8.GetString(res.value.CopyToNewArray());
 
-            return JsonConvert.DeserializeObject<Keyword>(strObj);
+            return JsonConvert.DeserializeObject<T>(strObj);
 
         }
 
-        public bool Upsert(Keyword entity)
+        public bool Upsert(string key, T entity)
         {
             var strObj = JsonConvert.SerializeObject(entity);
 
             var bytes = Encoding.UTF8.GetBytes(strObj);
-            var res = _txn.Put(_db, Encoding.UTF8.GetBytes(entity.Term), bytes);
+            var res = _txn.Put(_db, Encoding.UTF8.GetBytes(key), bytes);
 
             return res == MDBResultCode.Success;
         }

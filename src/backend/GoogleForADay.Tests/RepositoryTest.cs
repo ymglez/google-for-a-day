@@ -41,7 +41,7 @@ namespace GoogleForADay.Tests
                     }
                 };
 
-                repo.Upsert(data);
+                repo.Upsert(data.Term, data);
             }
 
             repo.SaveChanges();
@@ -75,7 +75,7 @@ namespace GoogleForADay.Tests
                 }
             };
 
-            repo.Upsert(data);
+            repo.Upsert(data.Term, data);
 
             data = repo.Get("qwert");
 
