@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
-namespace GoogleForADay.Core.Model
+namespace GoogleForADay.Core.Model.Store
 {
     public class Keyword : Entity
     {

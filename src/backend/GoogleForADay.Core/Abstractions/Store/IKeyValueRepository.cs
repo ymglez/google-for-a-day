@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using GoogleForADay.Core.Model;
+using GoogleForADay.Core.Model.Store;
 
 namespace GoogleForADay.Core.Abstractions.Store
 {

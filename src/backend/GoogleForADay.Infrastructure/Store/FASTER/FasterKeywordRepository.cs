@@ -3,6 +3,7 @@ using System.IO;
 using FASTER.core;
 using GoogleForADay.Core.Abstractions.Store;
 using GoogleForADay.Core.Model;
+using GoogleForADay.Core.Model.Store;
 
 namespace GoogleForADay.Infrastructure.Store.FASTER
 {

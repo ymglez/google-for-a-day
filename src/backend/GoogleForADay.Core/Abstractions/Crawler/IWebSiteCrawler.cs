@@ -6,5 +6,6 @@ namespace GoogleForADay.Core.Abstractions.Crawler
 {
     public interface IWebSiteCrawler
     {
+
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using GoogleForADay.Core.Abstractions.Store;
 using GoogleForADay.Core.Model;
+using GoogleForADay.Core.Model.Store;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 

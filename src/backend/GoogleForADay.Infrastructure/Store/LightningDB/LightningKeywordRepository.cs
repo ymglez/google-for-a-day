@@ -4,6 +4,7 @@ using System.Text;
 using FASTER.core;
 using GoogleForADay.Core.Abstractions.Store;
 using GoogleForADay.Core.Model;
+using GoogleForADay.Core.Model.Store;
 using LightningDB;
 using Newtonsoft.Json;
 
