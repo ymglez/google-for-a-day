@@ -11,6 +11,6 @@ namespace GoogleForADay.Core.Model.Crawler
 
         public List<WebSiteInfo> WebInfos { get; set; }
 
-        public int ComplexionTime { get; set; }
+        public double ComplexionTime { get; set; }
     }
 }

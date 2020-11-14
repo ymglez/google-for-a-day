@@ -7,6 +7,6 @@ namespace GoogleForADay.Core.Abstractions.Crawler
 {
     public interface IWebSiteCrawler
     {
-        CrawlResponse Crawl(string url);
+        CrawlResponse Crawl(string url, int depth = 2);
     }
 }

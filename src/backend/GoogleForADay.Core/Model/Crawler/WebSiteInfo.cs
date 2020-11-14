@@ -11,5 +11,7 @@ namespace GoogleForADay.Core.Model.Crawler
 
         public IDictionary<string, int> Words { get; set; }
 
+        
+
     }
 }
