@@ -10,7 +10,18 @@ namespace GoogleForADay.Core.Model.Store
 
         public string Tittle { get; set; }
 
-        public uint Occurrences { get; set; }
+        public int Occurrences { get; set; }
+
+
+        public override int GetHashCode()
+        {
+            return Url.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            return (obj is Reference reference) && reference.Url == Url;
+        }
     }
 
 }

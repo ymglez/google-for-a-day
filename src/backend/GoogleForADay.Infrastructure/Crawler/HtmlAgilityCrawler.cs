@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using GoogleForADay.Core.Abstractions.Crawler;
 using GoogleForADay.Core.Extensions;
 using GoogleForADay.Core.Model.Crawler;
@@ -21,12 +22,12 @@ namespace GoogleForADay.Infrastructure.Crawler
 
         public const string CachePath  = "web/cache/";
 
-        public CrawlResponse Crawl(string url, int depth = 2)
+        public async Task<CrawlResponse> Crawl(string url, int depth)
         {
             Depth = depth;
             var response = new CrawlResponse
             {
-                StatusCode = HttpStatusCode.OK,
+                ErrorCount = 0,
                 WebInfos = new List<WebSiteInfo>()
             };
 
@@ -41,11 +42,21 @@ namespace GoogleForADay.Infrastructure.Crawler
                 CachePath = CachePath,
                 UsingCache = true,
             };
-            
-            foreach (var (key, value) in ExternalLinks)
+
+            for (int i = 0; i < ExternalLinks.Keys.Count; i++)
             {
-                var document = web.Load(key);
-                response.WebInfos.Add(Parse(document, key, value));
+                var currentUrl = ExternalLinks.Keys.ElementAt(i);
+                var level = ExternalLinks[currentUrl];
+                try
+                {
+                    var document = await web.LoadFromWebAsync(currentUrl);
+                    response.WebInfos.Add(Parse(document, currentUrl, level));
+                }
+                catch
+                {
+                    response.ErrorCount++;
+                }
+                
             }
             
 
@@ -61,7 +72,6 @@ namespace GoogleForADay.Infrastructure.Crawler
 
         private WebSiteInfo Parse(HtmlDocument doc, string url, int level)
         {
-
             if (doc?.DocumentNode == null) return null;
             var tt = doc.DocumentNode.SelectSingleNode("//head/title");
             var response = new WebSiteInfo
@@ -71,7 +81,6 @@ namespace GoogleForADay.Infrastructure.Crawler
                 Words = new Dictionary<string, int>()
             };
 
-           
             foreach (var node in doc?.DocumentNode.DescendantsAndSelf())
             {
                 

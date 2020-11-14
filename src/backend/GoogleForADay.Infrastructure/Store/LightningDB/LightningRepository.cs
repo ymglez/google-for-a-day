@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using FASTER.core;
@@ -29,8 +30,8 @@ namespace GoogleForADay.Infrastructure.Store.LightningDB
         }
         public bool Init()
         {
-            _env = new LightningEnvironment("storeLight");
-            var dbName = "test";
+            _env = new LightningEnvironment("store");
+            var dbName = $"{typeof(T).Name}_db";
             _env.MaxDatabases = 2;
             _env.Open();
             _txn = _env.BeginTransaction();
@@ -49,7 +50,7 @@ namespace GoogleForADay.Infrastructure.Store.LightningDB
             return JsonConvert.DeserializeObject<T>(strObj);
 
         }
-
+        
         public bool Upsert(string key, T entity)
         {
             var strObj = JsonConvert.SerializeObject(entity);
@@ -71,7 +72,9 @@ namespace GoogleForADay.Infrastructure.Store.LightningDB
 
         public bool Clear()
         {
-            throw new NotImplementedException();
+            var res = _db.Drop(_txn);
+
+            return res == MDBResultCode.Success;
         }
 
 

@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
+using GoogleForADay.Core.Model.Crawler;
+using GoogleForADay.Core.Model.Store;
 
 namespace GoogleForADay.Core.Extensions
 {
-    public static class StringExt
+    public static class GoogleForADayExt
     {
-
-  
-
 
         public static string[] SplitIntoWords(this string text)
         {
@@ -23,7 +20,7 @@ namespace GoogleForADay.Core.Extensions
                 {
                     sb.Append(c);
                 }
-                else if(sb.Length > 1)
+                else if (sb.Length > 1)
                 {
                     words.Add(sb.ToString().ToLowerInvariant());
                     sb.Clear();
@@ -32,10 +29,15 @@ namespace GoogleForADay.Core.Extensions
                 {
                     sb.Clear();
                 }
-
             }
-  
+
             return words.ToArray();
         }
+
+
+
+        
+
+
     }
 }
