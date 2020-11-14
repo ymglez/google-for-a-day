@@ -19,6 +19,8 @@ namespace GoogleForADay.Infrastructure.Crawler
 
         public int Depth { get; set; }
 
+        public const string CachePath  = "web/cache/";
+
         public CrawlResponse Crawl(string url, int depth = 2)
         {
             Depth = depth;
@@ -34,7 +36,11 @@ namespace GoogleForADay.Infrastructure.Crawler
 
 
             stopwatch.Start();
-            var web = new HtmlWeb();
+            var web = new HtmlWeb
+            {
+                CachePath = CachePath,
+                UsingCache = true,
+            };
             
             foreach (var (key, value) in ExternalLinks)
             {
@@ -77,7 +83,8 @@ namespace GoogleForADay.Infrastructure.Crawler
                 {
                     var att = node.Attributes["href"];
 
-                    if (level < Depth && att.Value.Contains("http") && !ExternalLinks.ContainsKey(att.Value))
+                    if (level < Depth && att.Value.Contains("http") && 
+                        !ExternalLinks.ContainsKey(att.Value))
                     {
                         ExternalLinks.Add(att.Value, level + 1);
                     }
