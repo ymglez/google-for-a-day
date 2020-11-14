@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using GoogleForADay.Core.Abstractions.Store;
 using GoogleForADay.Core.Model;
+using GoogleForADay.Core.Model.Store;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -16,31 +17,31 @@ namespace GoogleForADay.Tests
         {
             var rnd = new Random();
             var repo = ServiceProvider.GetService<IKeyValueRepository<Keyword>>();
-            for (int i = 2; i < 1000; i++)
+            for (int i = 2; i < 200000; i++)
            
             {
 
                 var data = new Keyword
                 {
-                    Term = GenerateWord(i),
+                    Term = GenerateWord(i % 8 + 2),
                     References = new List<Reference>
                     {
                         new Reference
                         {
-                            Occurrences = (uint) rnd.Next(5000),
+                            Occurrences = rnd.Next(5000),
                             Tittle = "this is the first test",
                             Url = "http://www.test.first"
                         },
                         new Reference
                         {
-                            Occurrences = (uint) rnd.Next(5000),
+                            Occurrences = rnd.Next(5000),
                             Tittle = "hello world",
                             Url = "http://www.hello.com"
                         }
                     }
                 };
 
-                repo.Upsert(data);
+                repo.Upsert(data.Term, data);
             }
 
             repo.SaveChanges();
@@ -54,34 +55,12 @@ namespace GoogleForADay.Tests
         {
             var repo = ServiceProvider.GetService<IKeyValueRepository<Keyword>>();
 
-            var data = new Keyword
-            {
-                Term = "qwert",
-                References = new List<Reference>
-                {
-                    new Reference
-                    {
-                        Occurrences = 2,
-                        Tittle = "this is the first test",
-                        Url = "http://www.test.first"
-                    },
-                    new Reference
-                    {
-                        Occurrences = 9,
-                        Tittle = "hello world",
-                        Url = "http://www.hello.com"
-                    }
-                }
-            };
 
-            repo.Upsert(data);
+            var data = repo.Get("github");
+            Assert.True(data.Term == "github");
 
-            data = repo.Get("qwert");
-
-
-            Assert.True(data.Term == "d219196");
-
-
+            data = repo.Get("rank");
+            Assert.True(data.Term == "rank");
         }
 
 

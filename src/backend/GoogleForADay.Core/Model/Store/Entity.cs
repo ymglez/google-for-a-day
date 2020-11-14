@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace GoogleForADay.Core.Model
+namespace GoogleForADay.Core.Model.Store
 {
     public abstract class Entity
     {

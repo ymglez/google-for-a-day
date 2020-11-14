@@ -1,15 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using FASTER.core;
 using GoogleForADay.Core.Abstractions.Store;
 using GoogleForADay.Core.Model;
+using GoogleForADay.Core.Model.Store;
 using LightningDB;
 using Newtonsoft.Json;
 
 namespace GoogleForADay.Infrastructure.Store.LightningDB
 {
-    public class LightningKeywordRepository : IKeyValueRepository<Keyword>
+    public class LightningRepository<T> : IKeyValueRepository<T> where T : Entity 
     {
 
         private LightningEnvironment _env;
@@ -18,7 +20,7 @@ namespace GoogleForADay.Infrastructure.Store.LightningDB
 
         private bool _alreadyInit;
 
-        public LightningKeywordRepository()
+        public LightningRepository()
         {
             if (_alreadyInit) return;
 
@@ -28,8 +30,8 @@ namespace GoogleForADay.Infrastructure.Store.LightningDB
         }
         public bool Init()
         {
-            _env = new LightningEnvironment("storeLight");
-            var dbName = "test";
+            _env = new LightningEnvironment("store");
+            var dbName = $"{typeof(T).Name}_db";
             _env.MaxDatabases = 2;
             _env.Open();
             _txn = _env.BeginTransaction();
@@ -39,25 +41,22 @@ namespace GoogleForADay.Infrastructure.Store.LightningDB
 
         }
 
-        public Keyword Get(object key)
+        public T Get(string key)
         {
-            if (!(key is string strKey))
-                throw new ArgumentException("Invalid key type");
-
-            var res = _txn.Get(_db, Encoding.UTF8.GetBytes(strKey));
+            var res = _txn.Get(_db, Encoding.UTF8.GetBytes(key));
 
             var strObj = Encoding.UTF8.GetString(res.value.CopyToNewArray());
 
-            return JsonConvert.DeserializeObject<Keyword>(strObj);
+            return JsonConvert.DeserializeObject<T>(strObj);
 
         }
-
-        public bool Upsert(Keyword entity)
+        
+        public bool Upsert(string key, T entity)
         {
             var strObj = JsonConvert.SerializeObject(entity);
 
             var bytes = Encoding.UTF8.GetBytes(strObj);
-            var res = _txn.Put(_db, Encoding.UTF8.GetBytes(entity.Term), bytes);
+            var res = _txn.Put(_db, Encoding.UTF8.GetBytes(key), bytes);
 
             return res == MDBResultCode.Success;
         }
@@ -73,7 +72,9 @@ namespace GoogleForADay.Infrastructure.Store.LightningDB
 
         public bool Clear()
         {
-            throw new NotImplementedException();
+            var res = _db.Drop(_txn);
+
+            return res == MDBResultCode.Success;
         }
 
 

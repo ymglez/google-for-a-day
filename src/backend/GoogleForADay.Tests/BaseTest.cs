@@ -1,11 +1,12 @@
 using System;
-using System.Collections.Generic;
+using GoogleForADay.Core.Abstractions.Crawler;
+using GoogleForADay.Core.Abstractions.Indexer;
 using GoogleForADay.Core.Abstractions.Store;
-using GoogleForADay.Core.Model;
-using GoogleForADay.Infrastructure.Store.FASTER;
+using GoogleForADay.Core.Model.Store;
+using GoogleForADay.Infrastructure.Crawler;
+using GoogleForADay.Infrastructure.Indexer;
 using GoogleForADay.Infrastructure.Store.LightningDB;
 using Microsoft.Extensions.DependencyInjection;
-using Xunit;
 
 namespace GoogleForADay.Tests
 {
@@ -16,7 +17,9 @@ namespace GoogleForADay.Tests
         public BaseTest()
         {
             ServiceProvider = new ServiceCollection()
-                .AddSingleton<IKeyValueRepository<Keyword>, LightningKeywordRepository>()
+                .AddSingleton<IKeyValueRepository<Keyword>, LightningRepository<Keyword>>()
+                .AddTransient<IWebSiteCrawler, HtmlAgilityCrawler>()
+                .AddSingleton<PageIndexer, InvertedIndexer>()
                 .BuildServiceProvider();
         }
 

@@ -3,10 +3,11 @@ using System.IO;
 using FASTER.core;
 using GoogleForADay.Core.Abstractions.Store;
 using GoogleForADay.Core.Model;
+using GoogleForADay.Core.Model.Store;
 
 namespace GoogleForADay.Infrastructure.Store.FASTER
 {
-    public class FasterKeywordRepository : FasterRepository, IKeyValueRepository<Keyword>
+    public class FasterKeywordRepository<T> where T : Entity, IKeyValueRepository<T>
     {
 
         private FasterKV<string, Keyword> Db { get; set; }
@@ -57,6 +58,8 @@ namespace GoogleForADay.Infrastructure.Store.FASTER
             return false;
 
         }
+
+        public string DataFolder { get; set; } = "store";
 
         public Keyword Get(object key)
         {
