@@ -12,17 +12,14 @@ namespace GoogleForADay.Tests
 {
     public class BaseTest
     {
-        protected IServiceProvider ServiceProvider;
+        protected static IServiceProvider ServiceProvider = new ServiceCollection()
+            .AddSingleton<IKeyValueRepository<Keyword>, LightningRepository<Keyword>>()
+            .AddTransient<IWebSiteCrawler, HtmlAgilityCrawler>()
+            .AddSingleton<IPageIndexer, InvertedIndexer>()
+            .AddSingleton<IndexerManagerBase, IndexerManager>()
+            .BuildServiceProvider();
 
-        public BaseTest()
-        {
-            ServiceProvider = new ServiceCollection()
-                .AddSingleton<IKeyValueRepository<Keyword>, LightningRepository<Keyword>>()
-                .AddTransient<IWebSiteCrawler, HtmlAgilityCrawler>()
-                .AddSingleton<PageIndexer, InvertedIndexer>()
-                .BuildServiceProvider();
-        }
 
-        
+
     }
 }

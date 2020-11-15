@@ -1,55 +1,56 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using GoogleForADay.Core.Abstractions.Crawler;
 using GoogleForADay.Core.Abstractions.Indexer;
 using GoogleForADay.Core.Abstractions.Store;
+using GoogleForADay.Core.Model.Crawler;
+using GoogleForADay.Core.Model.Indexer;
 using GoogleForADay.Core.Model.Store;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace GoogleForADay.Infrastructure.Indexer
 {
-    public class InvertedIndexer : PageIndexer
+    public class InvertedIndexer : IPageIndexer
     {
-        public InvertedIndexer(IKeyValueRepository<Keyword> repo, IWebSiteCrawler crawler) 
-            : base(repo, crawler)
+        public IKeyValueRepository<Keyword> Repo { get; }
+
+        public InvertedIndexer(IKeyValueRepository<Keyword> repo)
         {
+            Repo = repo;
         }
 
-        public override async Task<object> Index(string url, int depth = 2)
+        public void Index(WebSiteInfo info, ref IndexResponse response)
         {
-            var response = await Crawler.Crawl(url, depth);
-            var keywordsGroup = response.WebInfos
-                .Select(siteInfo => siteInfo.GetKeywords())
-                .SelectMany(keys => keys)
-                .GroupBy(k => k.Term)
-                .ToList();
+            var keywords = info.GetKeywords();
+            var resp = response;
 
-            
-            foreach (var grp in keywordsGroup)
+            Parallel.ForEach(keywords, keyword =>
             {
-                var key = grp.Key;
+                var word = Repo.Get(keyword.Term);
+                var exist = false;
 
-                var allReferences = grp
-                    .Select(k => k.References)
-                    .SelectMany(r => r)
-                    .ToList();
+                if (word != null)
+                {
+                    exist = true;
+                    word.References.AddRange(keyword.References);
+                    word.References = word.References.Distinct().ToList();
+                }
+                else
+                {
+                    word = keyword;
+                }
 
-                var word = Repo.Get(key) ?? grp.FirstOrDefault();
-                word?.References.AddRange(allReferences);
+                if (Repo.Upsert(keyword.Term, word) && !exist)
+                    resp.IndexedWords.Add(keyword.Term);
 
-                if(word == null) continue;
+            });
 
-                word.References = word?.References.Distinct().ToList();
+            response.IndexedWords = resp.IndexedWords;
+            response.IndexedPagesCount++;
 
-                Repo.Upsert(key, word);
-            }
-
-            Repo.SaveChanges();
-
-            return new
-            {
-                PagesCount = response.WebInfos.Count,
-                WordsCount = keywordsGroup.Distinct().Count()
-            };
         }
     }
 }

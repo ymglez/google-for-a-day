@@ -17,26 +17,19 @@ namespace GoogleForADay.Tests
         public void TestSimplePage()
         {
             var crawler = ServiceProvider.GetService<IWebSiteCrawler>();
+            
 
             var response = crawler.Crawl("https://github.com/ymglez/google-for-a-day", 2)
                 .ConfigureAwait(false)
                 .GetAwaiter()
                 .GetResult();
 
+            if (response.Item1)
+                crawler.Next();
+
         }
 
 
-        [Fact]
-        public void TestIndex()
-        {
-            var indexer = ServiceProvider.GetService<PageIndexer>();
-
-            var response = indexer.Index("https://github.com/ymglez/google-for-a-day", 2)
-                .ConfigureAwait(false)
-                .GetAwaiter()
-                .GetResult();
-
-            Assert.NotNull(response);
-        }
+        
     }
 }

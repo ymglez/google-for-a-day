@@ -15,6 +15,8 @@ namespace GoogleForADay.Core.Abstractions.Store
 
         bool Upsert(string key, T entity);
 
+        bool BulkUpsert(IDictionary<string,T> entities);
+
         bool Delete(object key);
 
         bool Clear();

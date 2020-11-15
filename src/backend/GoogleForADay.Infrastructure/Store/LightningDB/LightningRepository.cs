@@ -15,10 +15,12 @@ namespace GoogleForADay.Infrastructure.Store.LightningDB
     {
 
         private LightningEnvironment _env;
-        private LightningTransaction _txn;
+        
         private LightningDatabase _db;
 
-        private bool _alreadyInit;
+        private readonly bool _alreadyInit;
+
+        public string DataPath { get; set; } = "store";
 
         public LightningRepository()
         {
@@ -28,59 +30,118 @@ namespace GoogleForADay.Infrastructure.Store.LightningDB
             _alreadyInit = true;
 
         }
+
         public bool Init()
         {
-            _env = new LightningEnvironment("store");
+            _env = new LightningEnvironment(DataPath);
             var dbName = $"{typeof(T).Name}_db";
             _env.MaxDatabases = 2;
             _env.Open();
-            _txn = _env.BeginTransaction();
-            _db = _txn.OpenDatabase(dbName, new DatabaseConfiguration { Flags = DatabaseOpenFlags.Create });
-
+            using (var txn = _env.BeginTransaction())
+            {
+                _db = txn.OpenDatabase(dbName, new DatabaseConfiguration { Flags = DatabaseOpenFlags.Create });
+                txn.Commit();
+            }
+            
+            
             return true;
 
         }
 
+
+
+
         public T Get(string key)
         {
-            var res = _txn.Get(_db, Encoding.UTF8.GetBytes(key));
+            using (var transaction = _env.BeginTransaction(TransactionBeginFlags.ReadOnly))
+            {
+                var res = transaction.Get(_db, Encoding.UTF8.GetBytes(key));
 
-            var strObj = Encoding.UTF8.GetString(res.value.CopyToNewArray());
+                var strObj = Encoding.UTF8.GetString(res.value.CopyToNewArray());
 
-            return JsonConvert.DeserializeObject<T>(strObj);
-
+                return JsonConvert.DeserializeObject<T>(strObj);
+            }
         }
-        
+
         public bool Upsert(string key, T entity)
         {
-            var strObj = JsonConvert.SerializeObject(entity);
+            using (var transaction = _env.BeginTransaction())
+            {
+                var strObj = JsonConvert.SerializeObject(entity);
 
-            var bytes = Encoding.UTF8.GetBytes(strObj);
-            var res = _txn.Put(_db, Encoding.UTF8.GetBytes(key), bytes);
+                var bytes = Encoding.UTF8.GetBytes(strObj);
+                transaction.Put(_db, Encoding.UTF8.GetBytes(key), bytes);
 
-            return res == MDBResultCode.Success;
+                return transaction.Commit() == MDBResultCode.Success;
+            }
+        }
+
+        public bool BulkUpsert(IDictionary<string, T> entities)
+        {
+            using (var transaction = _env.BeginTransaction())
+            {
+                foreach (var (key, entity) in entities)
+                {
+                    var strObj = JsonConvert.SerializeObject(entity);
+
+                    var bytes = Encoding.UTF8.GetBytes(strObj);
+                    transaction.Put(_db, Encoding.UTF8.GetBytes(key), bytes);
+                }
+
+                try
+                {
+                    transaction.Commit();
+                    return true;
+                }
+                catch 
+                {
+                    return false;
+                }
+            }
         }
 
         public bool Delete(object key)
         {
             if (!(key is string strKey))
                 throw new ArgumentException("Invalid key type");
-
-            var res = _txn.Delete(_db, Encoding.UTF8.GetBytes(strKey));
-            return res == MDBResultCode.Success;
+            using (var transaction = _env.BeginTransaction())
+            {
+                var res = transaction.Delete(_db, Encoding.UTF8.GetBytes(strKey));
+                transaction.Commit();
+                return res == MDBResultCode.Success;
+            }
         }
 
         public bool Clear()
         {
-            var res = _db.Drop(_txn);
+            try
+            {
+                _db.Dispose();
+                _env.Dispose();
 
-            return res == MDBResultCode.Success;
+                if (Directory.Exists(DataPath))
+                    Directory.Delete(DataPath, true);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+            
+            
         }
-
 
         public void SaveChanges()
         {
-            _txn.Commit();
+            //no needed
+        }
+
+        public long Count()
+        {
+            using (var transaction = _env.BeginTransaction(TransactionBeginFlags.ReadOnly))
+            {
+                return transaction.GetEntriesCount(_db);
+            }
         }
     }
 }

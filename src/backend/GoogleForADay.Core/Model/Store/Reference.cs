@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace GoogleForADay.Core.Model.Store
@@ -20,7 +21,9 @@ namespace GoogleForADay.Core.Model.Store
 
         public override bool Equals(object obj)
         {
-            return (obj is Reference reference) && reference.Url == Url;
+            // simple comparison fails when (www.google.com and www.google.com/)
+            return (obj is Reference reference) && 
+                   (reference.Url.Replace('/','\0') == Url.Replace('/', '\0'));
         }
     }
 
