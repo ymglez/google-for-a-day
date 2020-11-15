@@ -8,6 +8,8 @@ namespace GoogleForADay.Core.Model.Indexer
 {
     public class IndexResponse
     {
+        public long ComplexionTime { get; set; }
+
         public int IndexedPagesCount { get; set; }
         public HashSet<string> IndexedWords { get; set; } = new HashSet<string>();
     }

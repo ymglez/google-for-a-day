@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using GoogleForADay.Core.Abstractions.Crawler;
 using GoogleForADay.Core.Extensions;
 using GoogleForADay.Core.Model.Crawler;
 using HtmlAgilityPack;
-using Newtonsoft.Json;
 
 namespace GoogleForADay.Infrastructure.Crawler
 {
@@ -56,9 +55,11 @@ namespace GoogleForADay.Infrastructure.Crawler
                 Index++;
                 return new Tuple<bool, WebSiteInfo>(true, info);
             }
-            catch
+            catch(Exception e)
             {
-                return new Tuple<bool, WebSiteInfo>(true, null);
+                System.IO.File.AppendAllText("erros.log", e.Message);
+                Index++;
+                return new Tuple<bool, WebSiteInfo>(Index < ExternalLinks.Keys.Count, null);
             }
         }
 
@@ -68,38 +69,45 @@ namespace GoogleForADay.Infrastructure.Crawler
         private WebSiteInfo Parse(HtmlDocument doc, string url, int level)
         {
             if (doc?.DocumentNode == null) return null;
+
+            var parentHost = new Uri(url).Host;
+
             var tt = doc.DocumentNode.SelectSingleNode("//head/title");
             var response = new WebSiteInfo
             {
                 Url = url,
                 Tittle = tt?.InnerText,
-                Words = new Dictionary<string, int>()
+                Words = new ConcurrentDictionary<string, int>()
             };
-
-            foreach (var node in doc.DocumentNode.DescendantsAndSelf())
+            
+            Parallel.ForEach(doc.DocumentNode.DescendantsAndSelf(), node =>
             {
-                
                 if (node.NodeType == HtmlNodeType.Text && node.ParentNode.Name != "script")
                 {
                     ExtractWords(ref response, node);
                 }
-                else if(node.Name == "a" && node.Attributes.Contains("href") )
+                else if (node.Name == "a" && node.Attributes.Contains("href"))
                 {
                     var att = node.Attributes["href"];
+                    var href = att.Value.Split('?')[0];
 
-                    if (level < Depth && att.Value.Contains("http") && 
-                        !ExternalLinks.ContainsKey(att.Value))
+                    if (level < Depth && 
+                        href.Contains("http") &&
+                        !ExternalLinks.ContainsKey(href) &&
+                        new Uri(href).Host != parentHost )
                     {
-                        ExternalLinks.Add(att.Value, level + 1);
+                        ExternalLinks.Add(href, level + 1);
                     }
-                    
+
                 }
-            }
+            });
 
             return response;
         }
 
-        private static void ExtractWords(ref WebSiteInfo response, HtmlNode item)
+
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        private void ExtractWords(ref WebSiteInfo response, HtmlNode item)
         {
             var text = HtmlEntity.DeEntitize(item.InnerText.Trim()) ;
 
@@ -111,8 +119,8 @@ namespace GoogleForADay.Infrastructure.Crawler
             {
                 if (response.Words.ContainsKey(word))
                     response.Words[word]++;
-                else
-                    response.Words.Add(word, 1);
+                else if (!response.Words.TryAdd(word, 1))
+                    response.Words[word]++;
             }
         }
 

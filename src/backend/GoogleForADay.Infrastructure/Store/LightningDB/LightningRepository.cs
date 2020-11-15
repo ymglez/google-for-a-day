@@ -36,6 +36,7 @@ namespace GoogleForADay.Infrastructure.Store.LightningDB
             _env = new LightningEnvironment(DataPath);
             var dbName = $"{typeof(T).Name}_db";
             _env.MaxDatabases = 2;
+            _env.MapSize = uint.MaxValue;
             _env.Open();
             using (var txn = _env.BeginTransaction())
             {
@@ -53,6 +54,9 @@ namespace GoogleForADay.Infrastructure.Store.LightningDB
 
         public T Get(string key)
         {
+            if (string.IsNullOrEmpty(key))
+                return null;
+
             using (var transaction = _env.BeginTransaction(TransactionBeginFlags.ReadOnly))
             {
                 var res = transaction.Get(_db, Encoding.UTF8.GetBytes(key));
@@ -65,14 +69,18 @@ namespace GoogleForADay.Infrastructure.Store.LightningDB
 
         public bool Upsert(string key, T entity)
         {
+            if (string.IsNullOrEmpty(key))
+                return false;
+
             using (var transaction = _env.BeginTransaction())
             {
                 var strObj = JsonConvert.SerializeObject(entity);
 
                 var bytes = Encoding.UTF8.GetBytes(strObj);
                 transaction.Put(_db, Encoding.UTF8.GetBytes(key), bytes);
+                var code = transaction.Commit();
 
-                return transaction.Commit() == MDBResultCode.Success;
+                return code == MDBResultCode.Success;
             }
         }
 
@@ -90,8 +98,8 @@ namespace GoogleForADay.Infrastructure.Store.LightningDB
 
                 try
                 {
-                    transaction.Commit();
-                    return true;
+                    var code = transaction.Commit();
+                    return code == MDBResultCode.Success;
                 }
                 catch 
                 {
@@ -102,7 +110,7 @@ namespace GoogleForADay.Infrastructure.Store.LightningDB
 
         public bool Delete(object key)
         {
-            if (!(key is string strKey))
+            if (!(key is string strKey) || string.IsNullOrEmpty(strKey))
                 throw new ArgumentException("Invalid key type");
             using (var transaction = _env.BeginTransaction())
             {
