@@ -3,13 +3,12 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Net;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using GoogleForADay.Core.Abstractions.Crawler;
 using GoogleForADay.Core.Extensions;
 using GoogleForADay.Core.Model.Crawler;
 using HtmlAgilityPack;
+using Newtonsoft.Json;
 
 namespace GoogleForADay.Infrastructure.Crawler
 {
@@ -19,54 +18,50 @@ namespace GoogleForADay.Infrastructure.Crawler
             new ConcurrentDictionary<string, int>();
 
         public int Depth { get; set; }
+        public bool Started { get; set; }
+        public int Index { get; set; }
 
         public const string CachePath  = "web/cache/";
 
-        public async Task<CrawlResponse> Crawl(string url, int depth)
+        private readonly HtmlWeb _web = new HtmlWeb
+        {
+            CachePath = CachePath,
+            UsingCache = true,
+        };
+
+        public async Task<Tuple<bool, WebSiteInfo>> Crawl(string url, int depth)
         {
             Depth = depth;
-            var response = new CrawlResponse
-            {
-                ErrorCount = 0,
-                WebInfos = new List<WebSiteInfo>()
-            };
+            Started = true;
 
             ExternalLinks.Add(url, 1);
 
-            var stopwatch = new Stopwatch();
-
-
-            stopwatch.Start();
-            var web = new HtmlWeb
-            {
-                CachePath = CachePath,
-                UsingCache = true,
-            };
-
-            for (int i = 0; i < ExternalLinks.Keys.Count; i++)
-            {
-                var currentUrl = ExternalLinks.Keys.ElementAt(i);
-                var level = ExternalLinks[currentUrl];
-                try
-                {
-                    var document = await web.LoadFromWebAsync(currentUrl);
-                    response.WebInfos.Add(Parse(document, currentUrl, level));
-                }
-                catch
-                {
-                    response.ErrorCount++;
-                }
-                
-            }
-            
-
-            stopwatch.Stop();
-            response.ComplexionTime = stopwatch.Elapsed.TotalSeconds;
-
-            return response;
+            return await Next();
         }
 
-        
+        public async Task<Tuple<bool, WebSiteInfo>> Next()
+        {
+            if(!Started)
+                throw new Exception("Crawler not started yet");
+
+            if (Index >= ExternalLinks.Keys.Count)
+                return new Tuple<bool, WebSiteInfo>(false, null);
+
+            var currentUrl = ExternalLinks.Keys.ElementAt(Index);
+            var level = ExternalLinks[currentUrl];
+            try
+            {
+                var document = await _web.LoadFromWebAsync(currentUrl);
+                var info = Parse(document, currentUrl, level);
+                Index++;
+                return new Tuple<bool, WebSiteInfo>(true, info);
+            }
+            catch
+            {
+                return new Tuple<bool, WebSiteInfo>(true, null);
+            }
+        }
+
 
         #region helpers
 
@@ -81,7 +76,7 @@ namespace GoogleForADay.Infrastructure.Crawler
                 Words = new Dictionary<string, int>()
             };
 
-            foreach (var node in doc?.DocumentNode.DescendantsAndSelf())
+            foreach (var node in doc.DocumentNode.DescendantsAndSelf())
             {
                 
                 if (node.NodeType == HtmlNodeType.Text && node.ParentNode.Name != "script")

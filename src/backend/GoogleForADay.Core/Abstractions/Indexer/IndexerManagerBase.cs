@@ -4,21 +4,23 @@ using System.Text;
 using System.Threading.Tasks;
 using GoogleForADay.Core.Abstractions.Crawler;
 using GoogleForADay.Core.Abstractions.Store;
+using GoogleForADay.Core.Model.Indexer;
 using GoogleForADay.Core.Model.Store;
 
 namespace GoogleForADay.Core.Abstractions.Indexer
 {
-    public abstract class PageIndexer
+    public abstract class IndexerManagerBase
     {
-        public IKeyValueRepository<Keyword> Repo { get; }
+        
         public IWebSiteCrawler Crawler { get; }
+        public IPageIndexer Indexer { get; }
 
-        protected PageIndexer(IKeyValueRepository<Keyword> repo, IWebSiteCrawler crawler)
+        protected IndexerManagerBase( IWebSiteCrawler crawler, IPageIndexer indexer)
         {
-            Repo = repo;
             Crawler = crawler;
+            Indexer = indexer;
         }
 
-        public abstract Task<object> Index(string url, int depth = 2);
+        public abstract Task<IndexResponse> Index(string url, int depth = 2);
     }
 }

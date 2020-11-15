@@ -5,6 +5,7 @@ using System.Text;
 using GoogleForADay.Core.Abstractions.Store;
 using GoogleForADay.Core.Model;
 using GoogleForADay.Core.Model.Store;
+using GoogleForADay.Infrastructure.Store.LightningDB;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -12,11 +13,13 @@ namespace GoogleForADay.Tests
 {
     public class RepositoryTest : BaseTest
     {
+        private readonly IKeyValueRepository<Keyword> _repo = ServiceProvider.GetService<IKeyValueRepository<Keyword>>();
+
         [Fact]
         public void TestUpsert()
         {
             var rnd = new Random();
-            var repo = ServiceProvider.GetService<IKeyValueRepository<Keyword>>();
+            
             for (int i = 2; i < 200000; i++)
            
             {
@@ -41,28 +44,72 @@ namespace GoogleForADay.Tests
                     }
                 };
 
-                repo.Upsert(data.Term, data);
+                _repo.Upsert(data.Term, data);
             }
 
-            repo.SaveChanges();
+            _repo.SaveChanges();
 
         }
 
+        [Fact]
+        public void TestOverride()
+        {
+            
+            _repo.Upsert("github", null);
+            //_repo.SaveChanges();
 
+            var data = _repo.Get("github");
+            Assert.True(data == null);
+
+
+            _repo.Upsert("github", new Keyword
+            {
+                Term = "github",
+                References = new List<Reference>
+                {
+                    new Reference
+                    {
+                        Occurrences = 2,
+                        Tittle = "this is the first test",
+                        Url = "http://www.test.first"
+                    },
+                    new Reference
+                    {
+                        Occurrences = 8,
+                        Tittle = "hello world",
+                        Url = "http://www.hello.com"
+                    }
+                }
+            });
+            
+            data = _repo.Get("github");
+            Assert.True(data.Term == "github" && data.References.Count == 2);
+
+            _repo.SaveChanges();
+        }
 
         [Fact]
         public void TestGet()
         {
-            var repo = ServiceProvider.GetService<IKeyValueRepository<Keyword>>();
+            var cant = ((LightningRepository<Keyword>) _repo).Count();
+            var words = new List<string>
+            {
+                "occurrences", "words", "engine"
+            };
 
-
-            var data = repo.Get("github");
-            Assert.True(data.Term == "github");
-
-            data = repo.Get("rank");
-            Assert.True(data.Term == "rank");
+            foreach (var word in words)
+            {
+                var data = _repo.Get(word);
+                Assert.True(data.Term == word);
+            }
         }
 
+
+        [Fact]
+        public void TestCleanup()
+        {
+            Assert.True(_repo.Clear());
+        }
 
 
         string GenerateWord(int length)
