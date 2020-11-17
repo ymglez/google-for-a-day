@@ -15,11 +15,11 @@ namespace GoogleForADay.Infrastructure.Indexer
 {
     public class InvertedIndexer : IPageIndexer
     {
-        public IKeyValueRepository<Keyword> Repo { get; }
+        public IKeyValueRepository<Keyword> Repository { get; }
 
-        public InvertedIndexer(IKeyValueRepository<Keyword> repo)
+        public InvertedIndexer(IKeyValueRepository<Keyword> repository)
         {
-            Repo = repo;
+            Repository = repository;
         }
 
         public void Index(WebSiteInfo info, ref IndexResponse response)
@@ -29,7 +29,7 @@ namespace GoogleForADay.Infrastructure.Indexer
 
             Parallel.ForEach(keywords, keyword =>
             {
-                var word = Repo.Get(keyword.Term);
+                var word = Repository.Get(keyword.Term);
                 var exist = false;
 
                 if (word != null)
@@ -43,7 +43,7 @@ namespace GoogleForADay.Infrastructure.Indexer
                     word = keyword;
                 }
 
-                if (Repo.Upsert(keyword.Term, word) && !exist)
+                if (Repository.Upsert(keyword.Term, word) && !exist)
                     resp.IndexedWords.Add(keyword.Term);
 
             });

@@ -12,7 +12,7 @@ namespace GoogleForADay.Core.Model.Store
 
         protected DateTime Created { get; set; }
 
-        protected DateTime Modified { get; set; }
+        public DateTime Modified { get; set; }
 
     }
 }

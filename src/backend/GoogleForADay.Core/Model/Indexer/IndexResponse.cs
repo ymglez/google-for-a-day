@@ -11,6 +11,7 @@ namespace GoogleForADay.Core.Model.Indexer
         public long ComplexionTime { get; set; }
 
         public int IndexedPagesCount { get; set; }
+        public int IndexedWordsCount { get; set; }
         public HashSet<string> IndexedWords { get; set; } = new HashSet<string>();
     }
 }

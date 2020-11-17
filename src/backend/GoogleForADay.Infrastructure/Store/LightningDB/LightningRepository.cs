@@ -74,8 +74,8 @@ namespace GoogleForADay.Infrastructure.Store.LightningDB
 
             using (var transaction = _env.BeginTransaction())
             {
+                entity.Modified = DateTime.Now;
                 var strObj = JsonConvert.SerializeObject(entity);
-
                 var bytes = Encoding.UTF8.GetBytes(strObj);
                 transaction.Put(_db, Encoding.UTF8.GetBytes(key), bytes);
                 var code = transaction.Commit();
@@ -90,6 +90,7 @@ namespace GoogleForADay.Infrastructure.Store.LightningDB
             {
                 foreach (var (key, entity) in entities)
                 {
+                    entity.Modified = DateTime.Now;
                     var strObj = JsonConvert.SerializeObject(entity);
 
                     var bytes = Encoding.UTF8.GetBytes(strObj);

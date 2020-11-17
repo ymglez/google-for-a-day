@@ -57,7 +57,7 @@ namespace GoogleForADay.Infrastructure.Crawler
             }
             catch(Exception e)
             {
-                System.IO.File.AppendAllText("erros.log", e.Message);
+                System.IO.File.AppendAllText("erros.log", $"{e.Message}\n");
                 Index++;
                 return new Tuple<bool, WebSiteInfo>(Index < ExternalLinks.Keys.Count, null);
             }
@@ -117,9 +117,7 @@ namespace GoogleForADay.Infrastructure.Crawler
 
             foreach (var word in words)
             {
-                if (response.Words.ContainsKey(word))
-                    response.Words[word]++;
-                else if (!response.Words.TryAdd(word, 1))
+                if (!response.Words.TryAdd(word, 1))
                     response.Words[word]++;
             }
         }
