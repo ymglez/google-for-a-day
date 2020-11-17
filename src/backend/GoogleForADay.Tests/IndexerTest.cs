@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using GoogleForADay.Core.Abstractions.Indexer;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace GoogleForADay.Tests
@@ -15,11 +16,11 @@ namespace GoogleForADay.Tests
         public void TestIndex()
         {
  
-            var response = _indexer.Index("https://github.com/ymglez/google-for-a-day", 2)
+            var response = _indexer.Index("http://www.cuba.cu/", 2)
                 .ConfigureAwait(false)
                 .GetAwaiter()
                 .GetResult();
-
+            System.IO.File.AppendAllText("index_results.log" , JsonConvert.SerializeObject(response) + '\n');
             Assert.NotNull(response);
         }
     }

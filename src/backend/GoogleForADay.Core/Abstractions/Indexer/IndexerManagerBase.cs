@@ -12,8 +12,8 @@ namespace GoogleForADay.Core.Abstractions.Indexer
     public abstract class IndexerManagerBase
     {
         
-        public IWebSiteCrawler Crawler { get; }
-        public IPageIndexer Indexer { get; }
+        protected IWebSiteCrawler Crawler { get; }
+        protected IPageIndexer Indexer { get; }
 
         protected IndexerManagerBase( IWebSiteCrawler crawler, IPageIndexer indexer)
         {

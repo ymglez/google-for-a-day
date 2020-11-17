@@ -6,6 +6,7 @@ using GoogleForADay.Core.Model.Store;
 using GoogleForADay.Infrastructure.Crawler;
 using GoogleForADay.Infrastructure.Indexer;
 using GoogleForADay.Infrastructure.Store.LightningDB;
+using GoogleForADay.Services.Business.Controllers;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GoogleForADay.Tests
@@ -17,9 +18,8 @@ namespace GoogleForADay.Tests
             .AddTransient<IWebSiteCrawler, HtmlAgilityCrawler>()
             .AddSingleton<IPageIndexer, InvertedIndexer>()
             .AddSingleton<IndexerManagerBase, IndexerManager>()
+            .AddScoped<EngineController>()
             .BuildServiceProvider();
-
-
 
     }
 }

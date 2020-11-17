@@ -94,7 +94,7 @@ namespace GoogleForADay.Tests
             var cant = ((LightningRepository<Keyword>) _repo).Count();
             var words = new List<string>
             {
-                "occurrences", "words", "engine"
+                "cuba", "software",
             };
 
             foreach (var word in words)

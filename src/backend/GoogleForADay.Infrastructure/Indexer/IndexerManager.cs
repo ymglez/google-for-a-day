@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Diagnostics;
 using System.Threading.Tasks;
 using GoogleForADay.Core.Abstractions.Crawler;
 using GoogleForADay.Core.Abstractions.Indexer;
-using GoogleForADay.Core.Abstractions.Store;
 using GoogleForADay.Core.Model.Indexer;
-using GoogleForADay.Core.Model.Store;
 
 namespace GoogleForADay.Infrastructure.Indexer
 {
@@ -22,13 +18,20 @@ namespace GoogleForADay.Infrastructure.Indexer
         {
             var response = new IndexResponse();
 
-            var crawlResult = await Crawler.Crawl(url, depth);
+            var watch = new Stopwatch();
 
-            while (crawlResult.Item1)
+            watch.Start();
+            var crawlResult = await Crawler.Crawl(url, depth);
+            
+            while (crawlResult.Item1 )
             {
-                Indexer.Index(crawlResult.Item2, ref response);
+                if (crawlResult.Item2 != null)
+                    Indexer.Index(crawlResult.Item2, ref response);
+                
                 crawlResult = await Crawler.Next();
             }
+            watch.Stop();
+            response.ComplexionTime = watch.Elapsed.Seconds;
 
             return response;
         }

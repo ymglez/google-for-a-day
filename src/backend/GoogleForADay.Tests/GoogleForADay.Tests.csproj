@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GoogleForADay.Infrastructure\GoogleForADay.Infrastructure.csproj" />
+    <ProjectReference Include="..\GoogleForADay.Services.Business\GoogleForADay.Services.Business.csproj" />
   </ItemGroup>
 
 </Project>
