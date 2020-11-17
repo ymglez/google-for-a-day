@@ -12,12 +12,12 @@ using GoogleForADay.Services.Business.Validators;
 
 namespace GoogleForADay.Services.Business.Controllers
 {
-    public class EngineController
+    public class SearchEngineController
     {
-        public IndexerManagerBase Indexer { get; }
+        private IndexerManagerBase Indexer { get; }
         public IKeyValueRepository<Keyword> Repository { get; }
 
-        public EngineController(IndexerManagerBase indexer, IKeyValueRepository<Keyword> repository)
+        public SearchEngineController(IndexerManagerBase indexer, IKeyValueRepository<Keyword> repository)
         {
             Indexer = indexer;
             Repository = repository;
@@ -53,8 +53,11 @@ namespace GoogleForADay.Services.Business.Controllers
 
                 var response = Repository.Get(word);
 
+                if (response == null)
+                    return null;
+
                 // transform response according business need
-                response.References = response.References.OrderBy(r => r.Occurrences).ToList();
+                response.References = response.References.OrderByDescending(r => r.Occurrences).ToList();
                 return response;
             }
             catch (Exception e)

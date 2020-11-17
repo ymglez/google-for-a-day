@@ -71,12 +71,16 @@ namespace GoogleForADay.Infrastructure.Crawler
             if (doc?.DocumentNode == null) return null;
 
             var parentHost = new Uri(url).Host;
+            var domains = new HashSet<string>
+            {
+                parentHost
+            };
 
             var tt = doc.DocumentNode.SelectSingleNode("//head/title");
             var response = new WebSiteInfo
             {
                 Url = url,
-                Tittle = tt?.InnerText,
+                Tittle = HtmlEntity.DeEntitize(tt?.InnerText.Trim()),
                 Words = new ConcurrentDictionary<string, int>()
             };
             
@@ -91,13 +95,16 @@ namespace GoogleForADay.Infrastructure.Crawler
                     var att = node.Attributes["href"];
                     var href = att.Value.Split('?')[0];
 
-                    if (level < Depth && 
-                        href.Contains("http") &&
-                        !ExternalLinks.ContainsKey(href) &&
-                        new Uri(href).Host != parentHost )
-                    {
-                        ExternalLinks.Add(href, level + 1);
-                    }
+                    if (!href.Contains("http") ) return;
+                    
+                    var domain = new Uri(href).Host;
+
+                    if (level >= Depth || 
+                        ExternalLinks.ContainsKey(href) || 
+                        domains.Contains(domain)) return;
+
+                    domains.Add(domain);
+                    ExternalLinks.Add(href, level + 1);
 
                 }
             });

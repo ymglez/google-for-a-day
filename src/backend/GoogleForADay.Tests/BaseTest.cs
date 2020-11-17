@@ -18,7 +18,7 @@ namespace GoogleForADay.Tests
             .AddTransient<IWebSiteCrawler, HtmlAgilityCrawler>()
             .AddSingleton<IPageIndexer, InvertedIndexer>()
             .AddSingleton<IndexerManagerBase, IndexerManager>()
-            .AddScoped<EngineController>()
+            .AddScoped<SearchEngineController>()
             .BuildServiceProvider();
 
     }
