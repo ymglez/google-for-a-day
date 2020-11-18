@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using GoogleForADay.Services.Api.Model;
 using GoogleForADay.Services.Business.Controllers;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GoogleForADay.Services.Api.Controllers
@@ -77,8 +74,28 @@ namespace GoogleForADay.Services.Api.Controllers
         }
 
         [HttpPost("clear")]
-        public void PostClear([FromBody] string value)
+        public ApiResponse PostClear([FromBody] object unused)
         {
+            
+            var response = new ApiResponse();
+
+            try
+            {
+                var result = BusinessController.Repository.Clear();
+
+                response.Code = 200;
+                response.Message = "Ok";
+                response.Data = result;
+
+                return response;
+            }
+            catch (Exception e)
+            {
+                response.Code = 500;
+                response.Message = e.Message;
+                return response;
+            }
+
         }
 
     }

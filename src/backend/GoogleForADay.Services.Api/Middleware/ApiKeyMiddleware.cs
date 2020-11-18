@@ -11,14 +11,14 @@ namespace GoogleForADay.Services.Api.Middleware
     public class ApiKeyMiddleware
     {
         private readonly RequestDelegate _next;
-        private const string APIKEYNAME = "ApiKey";
+        private const string ApiKeyName = "ApiKey";
         public ApiKeyMiddleware(RequestDelegate next)
         {
             _next = next;
         }
         public async Task InvokeAsync(HttpContext context)
         {
-            if (!context.Request.Headers.TryGetValue(APIKEYNAME, out var extractedApiKey))
+            if (!context.Request.Headers.TryGetValue(ApiKeyName, out var extractedApiKey))
             {
                 context.Response.StatusCode = 401;
                 await context.Response.WriteAsync("Missing api key");
@@ -27,7 +27,7 @@ namespace GoogleForADay.Services.Api.Middleware
 
             var appSettings = context.RequestServices.GetRequiredService<IConfiguration > ();
 
-            var apiKey = appSettings.GetValue<string> (APIKEYNAME);
+            var apiKey = appSettings.GetValue<string> (ApiKeyName);
 
             if (!apiKey.Equals(extractedApiKey))
             {

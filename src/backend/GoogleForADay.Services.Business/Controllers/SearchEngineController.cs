@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Threading.Tasks;
 using GoogleForADay.Core.Abstractions.Indexer;
 using GoogleForADay.Core.Abstractions.Store;
@@ -38,7 +35,7 @@ namespace GoogleForADay.Services.Business.Controllers
             }
             catch (Exception e)
             {
-                System.IO.File.AppendAllText("erros.log", $"{e.Message}\n");
+                System.IO.File.AppendAllText("errors.log", $"{e.Message}\n");
                 throw;
             }
         }
@@ -62,7 +59,7 @@ namespace GoogleForADay.Services.Business.Controllers
             }
             catch (Exception e)
             {
-                System.IO.File.AppendAllText("erros.log", $"{e.Message}\n");
+                System.IO.File.AppendAllText("errors.log", $"{e.Message}\n");
                 throw;
             }
         }
