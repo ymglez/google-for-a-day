@@ -51,7 +51,7 @@ namespace GoogleForADay.Services.Business.Controllers
                 if (!InputValidator.ValidWord(word))
                     throw new ArgumentException($"input '{word}' is not valid word"); 
 
-                var response = Repository.Get(word);
+                var response = Repository.Get(word.ToLowerInvariant());
 
                 if (response == null)
                     return null;

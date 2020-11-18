@@ -57,10 +57,17 @@ namespace GoogleForADay.Infrastructure.Crawler
             }
             catch(Exception e)
             {
-                System.IO.File.AppendAllText("erros.log", $"{e.Message}\n");
+                System.IO.File.AppendAllText("erros.log", 
+                    $"[Crawler::Next] ->{e.Message}\n");
                 Index++;
                 return new Tuple<bool, WebSiteInfo>(Index < ExternalLinks.Keys.Count, null);
             }
+        }
+
+        public void Reset()
+        {
+            Index = 0;
+            ExternalLinks.Clear();
         }
 
 
@@ -96,15 +103,23 @@ namespace GoogleForADay.Infrastructure.Crawler
                     var href = att.Value.Split('?')[0];
 
                     if (!href.Contains("http") ) return;
+
+                    try
+                    {
+                        var domain = new Uri(href).Host;
+
+                        if (level >= Depth ||
+                            ExternalLinks.ContainsKey(href) ||
+                            domains.Contains(domain)) return;
+
+                        domains.Add(domain);
+                        ExternalLinks.Add(href, level + 1);
+                    }
+                    catch
+                    {
+                        // not valid url
+                    }
                     
-                    var domain = new Uri(href).Host;
-
-                    if (level >= Depth || 
-                        ExternalLinks.ContainsKey(href) || 
-                        domains.Contains(domain)) return;
-
-                    domains.Add(domain);
-                    ExternalLinks.Add(href, level + 1);
 
                 }
             });

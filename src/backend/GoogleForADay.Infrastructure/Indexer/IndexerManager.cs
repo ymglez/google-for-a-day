@@ -33,8 +33,10 @@ namespace GoogleForADay.Infrastructure.Indexer
             watch.Stop();
             response.ComplexionTime = watch.Elapsed.Seconds;
 
+            Crawler.Reset();
             return response;
         }
+
 
        
     }

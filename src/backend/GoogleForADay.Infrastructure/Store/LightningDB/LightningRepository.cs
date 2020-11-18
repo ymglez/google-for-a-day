@@ -44,7 +44,6 @@ namespace GoogleForADay.Infrastructure.Store.LightningDB
                 txn.Commit();
             }
             
-            
             return true;
 
         }
@@ -130,7 +129,8 @@ namespace GoogleForADay.Infrastructure.Store.LightningDB
 
                 if (Directory.Exists(DataPath))
                     Directory.Delete(DataPath, true);
-                return true;
+
+                return Init();
             }
             catch
             {

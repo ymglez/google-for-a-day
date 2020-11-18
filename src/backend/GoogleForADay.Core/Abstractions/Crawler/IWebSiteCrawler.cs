@@ -21,5 +21,7 @@ namespace GoogleForADay.Core.Abstractions.Crawler
         /// </summary>
         /// <returns>true if there are more, the crawled data for current url </returns>
         Task<Tuple<bool, WebSiteInfo>> Next();
+
+        void Reset();
     }
 }

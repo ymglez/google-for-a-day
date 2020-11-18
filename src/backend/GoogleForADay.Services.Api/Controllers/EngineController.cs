@@ -54,8 +54,26 @@ namespace GoogleForADay.Services.Api.Controllers
 
         // POST: api/Engine
         [HttpPost("index")]
-        public void PostIndex([FromBody] string value)
+        public async Task<ApiResponse> PostIndex([FromBody] ApiIndexRequest value)
         {
+            var response = new ApiResponse();
+
+            try
+            {
+                var businessResponse = await BusinessController.Index(value.Url, value.Depth);
+
+                response.Code = 200;
+                response.Message = "Ok";
+                response.Data = businessResponse;
+
+                return response;
+            }
+            catch (Exception e)
+            {
+                response.Code = 500;
+                response.Message = e.Message;
+                return response;
+            }
         }
 
         [HttpPost("clear")]
