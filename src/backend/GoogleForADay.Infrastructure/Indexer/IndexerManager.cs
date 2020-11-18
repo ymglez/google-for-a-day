@@ -23,13 +23,24 @@ namespace GoogleForADay.Infrastructure.Indexer
             watch.Start();
             var crawlResult = await Crawler.Crawl(url, depth);
             
-            while (crawlResult.Item1 )
+            /*while (crawlResult.Item1 )
             {
                 if (crawlResult.Item2 != null)
                     Indexer.Index(crawlResult.Item2, ref response);
                 
                 crawlResult = await Crawler.Next();
-            }
+            }*/
+
+            Core.Utils.Parallel.While(new ParallelOptions(), 
+                () => crawlResult.Item1,
+                () =>
+                {
+                    if (crawlResult.Item2 != null)
+                        Indexer.Index(crawlResult.Item2, ref response);
+
+                    crawlResult = Crawler.Next().GetAwaiter().GetResult();
+                });
+
             watch.Stop();
             response.ComplexionTime = watch.Elapsed.Seconds;
 
