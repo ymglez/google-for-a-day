@@ -16,7 +16,7 @@ namespace GoogleForADay.Tests
         public void TestIndex()
         {
  
-            var response = _indexer.Index("http://www.cuba.cu/", 2)
+            var response = _indexer.Index("http://www.cubadebate.cu/", 2)
                 .ConfigureAwait(false)
                 .GetAwaiter()
                 .GetResult();

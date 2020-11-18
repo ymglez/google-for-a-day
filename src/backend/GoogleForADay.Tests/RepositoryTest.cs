@@ -6,6 +6,7 @@ using GoogleForADay.Core.Abstractions.Store;
 using GoogleForADay.Core.Model;
 using GoogleForADay.Core.Model.Store;
 using GoogleForADay.Infrastructure.Store.LightningDB;
+using GoogleForADay.Services.Business.Controllers;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -92,9 +93,10 @@ namespace GoogleForADay.Tests
         public void TestGet()
         {
             var cant = ((LightningRepository<Keyword>) _repo).Count();
+            
             var words = new List<string>
             {
-                "cuba", "software",
+                "cuba", "software","icrt"
             };
 
             foreach (var word in words)

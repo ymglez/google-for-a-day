@@ -1,4 +1,13 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using GoogleForADay.Core.Abstractions.Crawler;
+using GoogleForADay.Core.Abstractions.Indexer;
+using GoogleForADay.Core.Abstractions.Store;
+using GoogleForADay.Core.Model.Store;
+using GoogleForADay.Infrastructure.Crawler;
+using GoogleForADay.Infrastructure.Indexer;
+using GoogleForADay.Infrastructure.Store.LightningDB;
+using GoogleForADay.Services.Api.Middleware;
+using GoogleForADay.Services.Business.Controllers;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -18,7 +27,14 @@ namespace GoogleForADay.Services.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services
+                .AddSingleton<IKeyValueRepository<Keyword>, LightningRepository<Keyword>>()
+                .AddTransient<IWebSiteCrawler, HtmlAgilityCrawler>()
+                .AddSingleton<IPageIndexer, InvertedIndexer>()
+                .AddSingleton<IndexerManagerBase, IndexerManager>()
+                .AddScoped<SearchEngineController>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -34,6 +50,8 @@ namespace GoogleForADay.Services.Api
             }
 
             app.UseHttpsRedirection();
+            
+            app.UseMiddleware<ApiKeyMiddleware>();
             app.UseMvc();
         }
     }

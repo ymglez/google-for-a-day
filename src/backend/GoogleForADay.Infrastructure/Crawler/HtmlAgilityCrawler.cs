@@ -57,10 +57,17 @@ namespace GoogleForADay.Infrastructure.Crawler
             }
             catch(Exception e)
             {
-                System.IO.File.AppendAllText("erros.log", $"{e.Message}\n");
+                System.IO.File.AppendAllText("erros.log", 
+                    $"[Crawler::Next] ->{e.Message}\n");
                 Index++;
                 return new Tuple<bool, WebSiteInfo>(Index < ExternalLinks.Keys.Count, null);
             }
+        }
+
+        public void Reset()
+        {
+            Index = 0;
+            ExternalLinks.Clear();
         }
 
 
@@ -71,12 +78,16 @@ namespace GoogleForADay.Infrastructure.Crawler
             if (doc?.DocumentNode == null) return null;
 
             var parentHost = new Uri(url).Host;
+            var domains = new HashSet<string>
+            {
+                parentHost
+            };
 
             var tt = doc.DocumentNode.SelectSingleNode("//head/title");
             var response = new WebSiteInfo
             {
                 Url = url,
-                Tittle = tt?.InnerText,
+                Tittle = HtmlEntity.DeEntitize(tt?.InnerText.Trim()),
                 Words = new ConcurrentDictionary<string, int>()
             };
             
@@ -91,13 +102,24 @@ namespace GoogleForADay.Infrastructure.Crawler
                     var att = node.Attributes["href"];
                     var href = att.Value.Split('?')[0];
 
-                    if (level < Depth && 
-                        href.Contains("http") &&
-                        !ExternalLinks.ContainsKey(href) &&
-                        new Uri(href).Host != parentHost )
+                    if (!href.Contains("http") ) return;
+
+                    try
                     {
+                        var domain = new Uri(href).Host;
+
+                        if (level >= Depth ||
+                            ExternalLinks.ContainsKey(href) ||
+                            domains.Contains(domain)) return;
+
+                        domains.Add(domain);
                         ExternalLinks.Add(href, level + 1);
                     }
+                    catch
+                    {
+                        // not valid url
+                    }
+                    
 
                 }
             });
