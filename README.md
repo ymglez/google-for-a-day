@@ -11,8 +11,7 @@ Requeriments:
     ```sh
     $ cd src/backend/GoogleForADay.Services.Api/
     $ dotnet build
-    $ cd bin/Debug/netcoreapp2.2
-    $ dotnet GoogleForADay.Services.Api.dll  --urls=http://localhost:5000/
+    $ dotnet run GoogleForADay.Services.Api.csproj  --urls=http://localhost:5000/
     ```
 	
 - Usage:
