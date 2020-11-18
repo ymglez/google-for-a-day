@@ -5,6 +5,7 @@ using GoogleForADay.Core.Model.Store;
 using GoogleForADay.Infrastructure.Crawler;
 using GoogleForADay.Infrastructure.Indexer;
 using GoogleForADay.Infrastructure.Store.LightningDB;
+using GoogleForADay.Services.Api.Middleware;
 using GoogleForADay.Services.Business.Controllers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -49,6 +50,8 @@ namespace GoogleForADay.Services.Api
             }
 
             app.UseHttpsRedirection();
+            
+            app.UseMiddleware<ApiKeyMiddleware>();
             app.UseMvc();
         }
     }
