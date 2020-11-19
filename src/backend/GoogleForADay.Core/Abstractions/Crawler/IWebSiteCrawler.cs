@@ -6,6 +6,9 @@ using GoogleForADay.Core.Model.Crawler;
 
 namespace GoogleForADay.Core.Abstractions.Crawler
 {
+    /// <summary>
+    /// Crawl web page
+    /// </summary>
     public interface IWebSiteCrawler
     {
         /// <summary>
@@ -13,7 +16,7 @@ namespace GoogleForADay.Core.Abstractions.Crawler
         /// </summary>
         /// <param name="url"></param>
         /// <param name="depth"></param>
-        /// <returns>true if start</returns>
+        /// <returns>true if start and root data</returns>
         Task<Tuple<bool, WebSiteInfo>> Crawl(string url, int depth );
 
         /// <summary>
@@ -22,6 +25,9 @@ namespace GoogleForADay.Core.Abstractions.Crawler
         /// <returns>true if there are more, the crawled data for current url </returns>
         Task<Tuple<bool, WebSiteInfo>> Next();
 
+        /// <summary>
+        /// Start fresh 
+        /// </summary>
         void Reset();
     }
 }

@@ -10,9 +10,16 @@ using GoogleForADay.Core.Model.Store;
 
 namespace GoogleForADay.Core.Abstractions.Indexer
 {
+    /// <summary>
+    /// Save info from a crawled web page
+    /// </summary>
     public interface IPageIndexer
     {
-
+        /// <summary>
+        /// Index algorithm
+        /// </summary>
+        /// <param name="info"></param>
+        /// <param name="response"></param>
         void Index(WebSiteInfo info, ref IndexResponse response);
     }
 }
