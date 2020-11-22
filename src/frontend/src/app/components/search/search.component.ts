@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { SearchResults, SearchStateEnum, SearchQuery } from '@app/app.model';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '@environments/environment';
 import { Observable, of, concat, Subject } from 'rxjs';
 import { map, switchMap, filter, catchError, takeUntil } from 'rxjs/operators';
@@ -18,6 +18,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   control = new FormControl();
   query$: Observable<SearchQuery>;
+  
 
   constructor(private httpClient: HttpClient, private searchService: SearchService) {
 
@@ -31,8 +32,8 @@ export class SearchComponent implements OnInit, OnDestroy {
           concat(
             of({ state: SearchStateEnum.Loading } as SearchQuery),
             this.doSearch(query.term).pipe(
-              map(results => <SearchQuery>{state: SearchStateEnum.Finished, data: results}),
-              catchError(err => of(<SearchQuery>{ state: SearchStateEnum.Error, error: err }))
+              map(results => ({state: SearchStateEnum.Finished, data: results} as SearchQuery)),
+              catchError(err => of({ state: SearchStateEnum.Error, error: err } as SearchQuery))
             )
           )
         ),
@@ -41,11 +42,11 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   doSearch(query: string): Observable<SearchResults> {
+    const requestHeaders = new HttpHeaders().set(environment.apikeyHeadername, environment.apiKeyHeaderValue);
+
     return this.httpClient
-      .get<SearchResults>(`${environment.apiUrl}/search`, {
-        params: {
-          q: query
-        }
+      .get<SearchResults>(`${environment.apiUrl}/engine/search/${query}`, {
+        headers: requestHeaders
       });
   }
 

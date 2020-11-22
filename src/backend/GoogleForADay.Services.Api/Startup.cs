@@ -9,6 +9,7 @@ using GoogleForADay.Services.Api.Middleware;
 using GoogleForADay.Services.Business.Controllers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,6 +28,21 @@ namespace GoogleForADay.Services.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                options.CheckConsentNeeded = context => true;
+                options.MinimumSameSitePolicy = SameSiteMode.None;
+            });
+
+            services.AddCors(options => options.AddPolicy("AllowAllHeaders",
+                builder =>
+                {
+                    builder.AllowAnyOrigin()
+                        .AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+                })
+            );
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services
@@ -50,7 +66,10 @@ namespace GoogleForADay.Services.Api
             }
 
             app.UseHttpsRedirection();
-            
+
+            app.UseCookiePolicy();
+            app.UseCors("AllowAllHeaders");
+
             app.UseMiddleware<ApiKeyMiddleware>();
             app.UseMvc();
         }
