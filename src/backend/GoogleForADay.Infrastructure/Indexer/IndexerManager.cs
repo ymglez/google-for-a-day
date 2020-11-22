@@ -30,6 +30,7 @@ namespace GoogleForADay.Infrastructure.Indexer
                 
                 crawlResult = await Crawler.Next();
             }
+
             watch.Stop();
             response.ComplexionTime = watch.Elapsed.Seconds;
 

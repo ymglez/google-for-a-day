@@ -7,6 +7,10 @@ using GoogleForADay.Core.Model.Store;
 
 namespace GoogleForADay.Core.Abstractions.Store
 {
+    /// <summary>
+    /// Persistence/retrieve functions based on key-value store model
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public interface IKeyValueRepository<T> where T : Entity
     {
         bool Init();

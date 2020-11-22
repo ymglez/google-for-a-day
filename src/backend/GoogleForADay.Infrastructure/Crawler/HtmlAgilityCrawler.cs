@@ -50,16 +50,16 @@ namespace GoogleForADay.Infrastructure.Crawler
             var level = ExternalLinks[currentUrl];
             try
             {
+                Index++;
                 var document = await _web.LoadFromWebAsync(currentUrl);
                 var info = Parse(document, currentUrl, level);
-                Index++;
+                
                 return new Tuple<bool, WebSiteInfo>(true, info);
             }
             catch(Exception e)
             {
                 System.IO.File.AppendAllText("erros.log", 
                     $"[Crawler::Next] ->{e.Message}\n");
-                Index++;
                 return new Tuple<bool, WebSiteInfo>(Index < ExternalLinks.Keys.Count, null);
             }
         }
