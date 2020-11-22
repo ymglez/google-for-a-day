@@ -4,34 +4,22 @@ export enum SearchStateEnum {
   Error = 'error'
 }
 
-export interface SearchQuery {
+export interface ApiResponse {
   state: SearchStateEnum;
-  data: SearchResults;
-  error: string;
+  code: number;
+  data: any;
+  message: string;
 }
 
 export interface SearchResults {
-  query: string;
-  results: SearchResult[];
+  term: string;
+  references: Reference[];
 }
 
-export interface SearchResult {
-  identifier: string;
-  title: string;
-
-  keywords: string[];
+export interface Reference {
+  tittle: string;
+  occurrences: number;
   url: string;
-  type: string;
-}
-
-export interface SearchSuggestions {
-  query: string;
-  results: SearchSuggestion[];
-}
-
-export interface SearchSuggestion {
-  text: string;
-  highlight: string;
 }
 
 export enum StatusEnum {

@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { SearchResults, SearchStateEnum, SearchQuery } from '@app/app.model';
+import { SearchStateEnum, ApiResponse } from '@app/app.model';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '@environments/environment';
 import { Observable, of, concat, Subject } from 'rxjs';
@@ -17,8 +17,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   destroy$ = new Subject<void>();
 
   control = new FormControl();
-  query$: Observable<SearchQuery>;
-  
+  query$: Observable<ApiResponse>;
 
   constructor(private httpClient: HttpClient, private searchService: SearchService) {
 
@@ -30,10 +29,20 @@ export class SearchComponent implements OnInit, OnDestroy {
         filter(query => !!query.term),
         switchMap(query =>
           concat(
-            of({ state: SearchStateEnum.Loading } as SearchQuery),
+            of({ state: SearchStateEnum.Loading } as ApiResponse),
             this.doSearch(query.term).pipe(
-              map(results => ({state: SearchStateEnum.Finished, data: results} as SearchQuery)),
-              catchError(err => of({ state: SearchStateEnum.Error, error: err } as SearchQuery))
+              map(result => {
+
+                console.log({resultApi:  result});
+
+                if (+result.code !== 200) {
+                  throw new Error(result.message);
+                }
+                result.state = SearchStateEnum.Finished;
+                return result;
+
+              }),
+              catchError(err => of({ state: SearchStateEnum.Error, message: err } as ApiResponse))
             )
           )
         ),
@@ -41,11 +50,11 @@ export class SearchComponent implements OnInit, OnDestroy {
       );
   }
 
-  doSearch(query: string): Observable<SearchResults> {
+  doSearch(query: string): Observable<ApiResponse> {
     const requestHeaders = new HttpHeaders().set(environment.apikeyHeadername, environment.apiKeyHeaderValue);
 
     return this.httpClient
-      .get<SearchResults>(`${environment.apiUrl}/engine/search/${query}`, {
+      .get<ApiResponse>(`${environment.apiUrl}/engine/search/${query}`, {
         headers: requestHeaders
       });
   }

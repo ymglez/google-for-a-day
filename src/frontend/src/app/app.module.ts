@@ -19,7 +19,6 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTableModule } from '@angular/material/table';
 import { MatMenuModule } from '@angular/material/menu';
 import { SearchComponent } from '@app/components/search/search.component';
-import { DocumentStatusComponent } from '@app/components/document-status/document-status.component';
 import { SearchService } from './services/search.service';
 import { IndexComponent } from '@app/components/index/index.component';
 
@@ -27,7 +26,6 @@ import { IndexComponent } from '@app/components/index/index.component';
   declarations: [
     AppComponent,
     SearchComponent,
-    DocumentStatusComponent,
     IndexComponent
   ],
   imports: [

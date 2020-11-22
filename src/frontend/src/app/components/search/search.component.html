@@ -14,24 +14,27 @@
         </ng-template>
 
         <!--No results found -->
-        <ng-template [ngIf]="query.state == 'finished' && query.data?.results.length == 0">
+        <ng-template [ngIf]="query.state == 'finished' && query.data?.references.length == 0">
             <div fxFlex fxLayout="row" fxLayoutAlign="center" style="margin-bottom:25px;">
                 <p>This query has no results. Maybe try a different one? 😓</p>
             </div>
         </ng-template>
 
-        <ng-template [ngIf]="query.state == 'finished' && query.data?.results.length > 0">
-            <div *ngFor="let result of query.data?.results" fxFlex fxLayout="row" style="margin-bottom:25px;">
+        <ng-template [ngIf]="query.state == 'finished' && query.data?.references.length > 0">
+            <div *ngFor="let result of query.data?.references" fxFlex fxLayout="row" style="margin-bottom:25px;">
                 <div fxFlex fxLayoutAlign="center">
                     <mat-card class="search-result">
                         <mat-card-content>
                             <div class="search-result-header" fxLayout="column">
-                                <h3><a class="search-link" href="{{result.url}}">{{result.title}}</a></h3>
+                                <h3><a class="search-link" href="{{result.url}}">{{result.tittle}}</a></h3>
                             </div>
                             <div>
-                                <mat-chip-list aria-label="Keywords">
-                                    <mat-chip *ngFor="let keyword of result?.keywords" color="accent">{{keyword}}</mat-chip>
-                                </mat-chip-list>
+                                <mat-label>
+                                    Occurrences:
+                                    <span> <strong style="font-weight: 500;">{{result.occurrences}}</strong> </span>
+                                </mat-label>
+
+
                             </div>
                         </mat-card-content>
                         <mat-card-actions>
