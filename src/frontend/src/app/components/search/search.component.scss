@@ -1,0 +1,34 @@
+.search-result {
+  width: 600px;
+}
+
+.search-results {
+  background-color: #eee;
+  height: 100%;
+  padding: 25px;
+}
+
+.search-link {
+
+  color: rgb(2, 80, 224);
+  text-decoration: none;
+
+  &:visited {
+    color:  rgb(2, 80, 224);
+  }
+}
+
+h3 {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.3;
+}
+
+.mat-card-content {
+  margin: 0;
+  word-wrap: break-word;
+}
+
+p {
+  margin: 0;
+}
