@@ -22,12 +22,14 @@ import { SearchComponent } from '@app/components/search/search.component';
 import { SearchService } from './services/search.service';
 import { IndexComponent } from '@app/components/index/index.component';
 import { ToastrModule } from 'ngx-toastr';
+import { ClearComponent } from '@app/components/clear/clear.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     SearchComponent,
-    IndexComponent
+    IndexComponent,
+    ClearComponent
   ],
   imports: [
     BrowserModule,

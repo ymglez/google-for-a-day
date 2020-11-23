@@ -59,20 +59,20 @@ export class IndexComponent implements OnInit {
 
           this.response$ = x;
           if (x.code !== 200) {
-              this.toastr.error(`Failed indexing page: ${body.Url} error ${x.message} 😧`, 'Error', {
+              this.toastr.error(`Fail indexing page... error ${x.message} 😧`, 'Error', {
                 timeOut: 5000
               });
           } else if (x.data.indexedWordsCount === 0) {
             this.toastr.info(`Seems like the given page doesn't exist or is unreadable for us..😒`, 'Error', {
               timeOut: 5000
             });
+          } else {
+            this.response$.state = QueryStateEnum.Finished;
+            this.toastr.success(`Indexed pages ${x.data.indexedPagesCount} and ${x.data.indexedWordsCount} words`, 'Success', {
+              timeOut: 5000
+            });
+            this.dialogRef.close();
           }
-
-          this.response$.state = QueryStateEnum.Finished;
-          this.toastr.success(`Indexed pages ${x.data.indexedPagesCount} and ${x.data.indexedWordsCount} words`, 'Success', {
-            timeOut: 5000
-          });
-          this.dialogRef.close();
 
         },
         err =>  {

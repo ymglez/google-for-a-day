@@ -1,0 +1,12 @@
+<div fxLayout="column" fxLayoutAlign="center" class="dialog-container">
+
+    <h2 mat-dialog-title>Want to detete all indexed data?</h2>
+
+    <div fxLayout="column">
+        <div mat-dialog-actions>
+            <button class="button-green" [mat-dialog-close]="" [disabled]="response$.state == 'loading'" mat-raised-button>No</button>
+            <button class="button-red" (click)="onClick()" [disabled]="response$.state == 'loading'" mat-raised-button>Yes</button>
+        </div>
+    </div>
+
+</div>

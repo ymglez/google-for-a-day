@@ -7,6 +7,7 @@ import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { IndexComponent } from './components/index/index.component';
 import { SearchService } from './services/search.service';
+import { ClearComponent } from './components/clear/clear.component';
 
 @Component({
   selector: 'app-root',
@@ -19,7 +20,7 @@ export class AppComponent {
 
   control = new FormControl();
 
-  query$: Observable<string>;
+  query$: string;
 
   constructor(private route: ActivatedRoute,
               private searchService: SearchService,
@@ -34,7 +35,7 @@ export class AppComponent {
     this.route.queryParams
       .pipe(
         map(params => params.q),
-        filter(query => !!query)
+        filter(query => query)
       )
       .subscribe(query => {
         this.control.setValue(query);
@@ -44,12 +45,20 @@ export class AppComponent {
   }
 
   onKeyupEnter(value: string): void {
+    this.query$ = value;
+
+    // this.searchService.submitSearch(value);
+
     // Instead of firing the Search directly, let's update the Route instead:
     this.router.navigate(['/search'], { queryParams: { q: value } });
   }
 
   openIndexDialog() {
     this.dialog.open(IndexComponent);
+  }
+
+  openClearDialog() {
+    this.dialog.open(ClearComponent);
   }
 
 }
