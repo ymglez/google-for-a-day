@@ -1,1 +1,22 @@
-<p>index works!</p>
+<h2>Add a page to the search index</h2>
+
+<form [formGroup]="indexForm">
+    <div fxLayout="column" class="file-input-container">
+        <div fxLayout="column">
+            <mat-form-field fxFlex>
+                <input matInput formControlName="url" type="url" placeholder="Page url">
+            </mat-form-field>
+        </div>
+        <div fxLayout="column">
+            <mat-form-field fxFlex>
+                <input matInput formControlName="depth" type="text" placeholder="Depth search">
+            </mat-form-field>
+        </div>
+
+        <div fxLayout="column">
+            <button class="submit" type="button" mat-raised-button color="mat-green" [disabled]="response$.state == 'loading'" (click)="onSubmit()">
+            Index page
+        </button>
+        </div>
+    </div>
+</form>

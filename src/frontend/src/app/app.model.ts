@@ -1,11 +1,12 @@
-export enum SearchStateEnum {
+export enum QueryStateEnum {
+  Init = 'init',
   Loading = 'loading',
   Finished = 'finished',
   Error = 'error'
 }
 
 export interface ApiResponse {
-  state: SearchStateEnum;
+  state: QueryStateEnum;
   code: number;
   data: any;
   message: string;
@@ -22,19 +23,4 @@ export interface Reference {
   url: string;
 }
 
-export enum StatusEnum {
-  None = 'none',
-  ScheduledIndex = 'scheduledIndex',
-  ScheduledDelete = 'scheduledDelete',
-  Indexed = 'indexed',
-  Failed = 'failed',
-  Deleted = 'deleted'
-}
 
-export interface DocumentStatus {
-  id: number;
-  filename: string;
-  title: string;
-  isOcrRequested: boolean;
-  status: StatusEnum;
-}

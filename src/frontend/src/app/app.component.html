@@ -1,14 +1,22 @@
 <div class="search-container" fxLayout="column">
     <div class="search-bar" fxLayout="row" fxLayoutAlign="center center">
+
+
         <input #search type="search" (keyup.enter)="onKeyupEnter(search.value)" [formControl]="control">
+
 
         <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
             <mat-icon>more_vert</mat-icon>
         </button>
         <mat-menu #menu="matMenu">
             <button mat-menu-item (click)="openIndexDialog()">
-                <mat-icon>add</mat-icon>
-                <span>Index page</span>
+                <mat-icon>find_in_page</mat-icon>
+                <span>Index</span>
+            </button>
+
+            <button mat-menu-item (click)="openIndexDialog()">
+                <mat-icon>remove_circle</mat-icon>
+                <span>Clear</span>
             </button>
         </mat-menu>
 

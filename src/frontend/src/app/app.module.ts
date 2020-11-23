@@ -21,6 +21,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { SearchComponent } from '@app/components/search/search.component';
 import { SearchService } from './services/search.service';
 import { IndexComponent } from '@app/components/index/index.component';
+import { ToastrModule } from 'ngx-toastr';
 
 @NgModule({
   declarations: [
@@ -47,7 +48,8 @@ import { IndexComponent } from '@app/components/index/index.component';
     MatChipsModule,
     MatCheckboxModule,
     MatTableModule,
-    MatMenuModule
+    MatMenuModule,
+    ToastrModule.forRoot()
   ],
   providers: [
     SearchService

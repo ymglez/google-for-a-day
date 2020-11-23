@@ -3,24 +3,31 @@
         <!--  -->
         <ng-template [ngIf]="query.state == 'loading'">
             <div fxFlex fxLayout="row" fxLayoutAlign="center" style="margin-bottom:25px;">
-                <mat-spinner></mat-spinner>
+                <mat-spinner color="accent"></mat-spinner>
             </div>
         </ng-template>
-        <!-- There was an error processing this request -->
+        <!-- Error processing this request -->
         <ng-template [ngIf]="query.state == 'error'">
             <div fxFlex fxLayout="row" fxLayoutAlign="center" style="margin-bottom:25px;">
-                <p>We are very sorry... There was an error processing the request. Maybe try again later? 😓</p>
+                <p>We are very sorry... {{query.message}}. Maybe try again later? 😱</p>
             </div>
         </ng-template>
 
         <!--No results found -->
         <ng-template [ngIf]="query.state == 'finished' && query.data?.references.length == 0">
             <div fxFlex fxLayout="row" fxLayoutAlign="center" style="margin-bottom:25px;">
-                <p>This query has no results. Maybe try a different one? 😓</p>
+                <p>This query has no results. Maybe try a different one? 🤷‍♂️</p>
             </div>
         </ng-template>
 
         <ng-template [ngIf]="query.state == 'finished' && query.data?.references.length > 0">
+            <div fxFlex fxLayoutAlign="center">
+                <p>
+                    <span style="color: dimgray;">
+                      Found {{query.data?.references.length}} results
+                  </span>
+                </p>
+            </div>
             <div *ngFor="let result of query.data?.references" fxFlex fxLayout="row" style="margin-bottom:25px;">
                 <div fxFlex fxLayoutAlign="center">
                     <mat-card class="search-result">
@@ -31,7 +38,7 @@
                             <div>
                                 <mat-label>
                                     Occurrences:
-                                    <span> <strong style="font-weight: 500;">{{result.occurrences}}</strong> </span>
+                                    <span> <strong style="font-weight: 600;">{{result.occurrences}}</strong> </span>
                                 </mat-label>
 
 

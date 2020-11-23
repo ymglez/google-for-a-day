@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { SearchStateEnum, ApiResponse } from '@app/app.model';
+import { QueryStateEnum, ApiResponse } from '@app/app.model';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '@environments/environment';
 import { Observable, of, concat, Subject } from 'rxjs';
@@ -29,20 +29,18 @@ export class SearchComponent implements OnInit, OnDestroy {
         filter(query => !!query.term),
         switchMap(query =>
           concat(
-            of({ state: SearchStateEnum.Loading } as ApiResponse),
+            of({ state: QueryStateEnum.Loading } as ApiResponse),
             this.doSearch(query.term).pipe(
               map(result => {
-
-                console.log({resultApi:  result});
 
                 if (+result.code !== 200) {
                   throw new Error(result.message);
                 }
-                result.state = SearchStateEnum.Finished;
+                result.state = QueryStateEnum.Finished;
                 return result;
 
               }),
-              catchError(err => of({ state: SearchStateEnum.Error, message: err } as ApiResponse))
+              catchError(err => of({ state: QueryStateEnum.Error, message: err.message } as ApiResponse))
             )
           )
         ),
