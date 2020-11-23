@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GoogleForADay.Core.Abstractions.Indexer;
@@ -51,7 +52,11 @@ namespace GoogleForADay.Services.Business.Controllers
                 var response = Repository.Get(word.ToLowerInvariant());
 
                 if (response == null)
-                    return null;
+                    return new Keyword
+                    {
+                        Term = word,
+                        References = new List<Reference>()
+                    };
 
                 // transform response according business need
                 response.References = response.References.OrderByDescending(r => r.Occurrences).ToList();
