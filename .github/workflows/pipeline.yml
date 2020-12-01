@@ -37,11 +37,11 @@ jobs:
         run: docker login -u ${{ secrets.DOCKER_USER }} 
              -p ${{ secrets.DOCKER_PASS }}
 
-      - name: Build Docker image
-        run: docker build -t $REPO-backend:latest -t $REPO:${GITHUB_SHA::8} src/backend
+      - name: Build docker images
+        run: docker build -t $REPO-backend:${GITHUB_SHA::8} src/backend
 
-      - name: Publish Docker image
-        run: docker push $REPO
+      - name: Publish Docker images
+        run: docker push $REPO-backend
 
 #  redeploy:
 #    name: Redeploy webhook call
