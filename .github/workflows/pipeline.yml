@@ -6,7 +6,7 @@ on:
       - 'feature/*'
 
 jobs:
-  build:
+  test:
     name: Build & Test
     runs-on: ubuntu-18.04
 
