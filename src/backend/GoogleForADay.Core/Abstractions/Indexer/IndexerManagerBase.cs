@@ -9,6 +9,9 @@ using GoogleForADay.Core.Model.Store;
 
 namespace GoogleForADay.Core.Abstractions.Indexer
 {
+    /// <summary>
+    /// Base class for index web pages
+    /// </summary>
     public abstract class IndexerManagerBase
     {
         

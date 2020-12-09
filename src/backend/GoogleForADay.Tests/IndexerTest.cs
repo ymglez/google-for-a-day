@@ -15,12 +15,17 @@ namespace GoogleForADay.Tests
         [Fact]
         public void TestIndex()
         {
- 
-            var response = _indexer.Index("http://www.cubadebate.cu/", 2)
+            var url = "https://dejanstojanovic.net/";
+            var response = _indexer.Index(url, 2)
                 .ConfigureAwait(false)
                 .GetAwaiter()
                 .GetResult();
-            System.IO.File.AppendAllText("index_results.log" , JsonConvert.SerializeObject(response) + '\n');
+
+            response.IndexedWordsCount = response.IndexedWords.Count;
+            response.IndexedWords = null;
+            System.IO.File.AppendAllText("index_results.log" , 
+                url + '\n' + JsonConvert.SerializeObject(response) + '\n');
+            
             Assert.NotNull(response);
         }
     }

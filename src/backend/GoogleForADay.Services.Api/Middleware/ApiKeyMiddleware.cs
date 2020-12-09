@@ -11,7 +11,7 @@ namespace GoogleForADay.Services.Api.Middleware
     public class ApiKeyMiddleware
     {
         private readonly RequestDelegate _next;
-        private const string ApiKeyName = "ApiKey";
+        private const string ApiKeyName = "x-api-key";
         public ApiKeyMiddleware(RequestDelegate next)
         {
             _next = next;

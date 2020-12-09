@@ -27,18 +27,17 @@ namespace GoogleForADay.Services.Api.Controllers
             try
             {
                 var businessResponse = BusinessController.Search(q);
-                if (businessResponse != null)
-                {
-                    response.Code = 200;
-                    response.Message = "Ok";
-                    response.Data = businessResponse;
-                }
-                else
-                {
-                    response.Code = 404;
-                    response.Message = "Not found";
-                }
 
+                response.Code = 200;
+                response.Message = "Ok";
+                response.Data = businessResponse;
+
+                return response;
+            }
+            catch (ArgumentException ae)
+            {
+                response.Code = 400;
+                response.Message = ae.Message;
                 return response;
             }
             catch (Exception e)

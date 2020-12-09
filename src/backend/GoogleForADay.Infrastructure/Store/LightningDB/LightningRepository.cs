@@ -36,7 +36,7 @@ namespace GoogleForADay.Infrastructure.Store.LightningDB
             _env = new LightningEnvironment(DataPath);
             var dbName = $"{typeof(T).Name}_db";
             _env.MaxDatabases = 2;
-            _env.MapSize = uint.MaxValue;
+            _env.MapSize = int.MaxValue;
             _env.Open();
             using (var txn = _env.BeginTransaction())
             {

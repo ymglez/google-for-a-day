@@ -1,0 +1,30 @@
+@import '~@angular/material/theming';
+$accent: mat-palette($mat-green);
+.search-container {
+    height: auto;
+}
+
+.search-bar {
+    height: 60px;
+    background-color: mat-color($accent, 200);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 1px 4px rgba(0, 0, 0, 0.05), 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+input {
+    border: solid 1px black;
+    outline: none;
+    margin: 10px;
+    padding: 6px 16px;
+    width: 100%;
+    max-width: 600px;
+    height: 40px;
+    font-size: 16px;
+}
+
+.add-button {
+    position: fixed;
+    top: auto;
+    right: 30px;
+    bottom: 30px;
+    left: auto;
+}
