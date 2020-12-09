@@ -10,6 +10,7 @@ Requeriments:
 - For test environment:
     ```sh
     $ cd src/backend/GoogleForADay.Services.Api/
+    $ dotnet restore GoogleForADay.Services.Api.csproj --configfile nuget.config
     $ dotnet build
     $ dotnet run GoogleForADay.Services.Api.csproj  --urls=http://localhost:5000/
     ```
